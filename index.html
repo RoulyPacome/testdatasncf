@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6f1">
+  <title>Qualité des données · Databricks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Navigation principale">
+      <a class="brand" href="#overview" aria-label="DataOps, accueil">
+        <span class="brand-mark"><span></span><span></span><span></span></span>
+        <span class="brand-name">data<span>ops</span></span>
+      </a>
+
+      <div class="workspace-switcher">
+        <span class="workspace-avatar">S</span>
+        <span class="workspace-copy"><strong>SNCF · Production</strong><small>Workspace Databricks</small></span>
+        <span class="chevron">⌄</span>
+      </div>
+
+      <p class="nav-label">ESPACE DE TRAVAIL</p>
+      <nav class="primary-nav">
+        <a class="nav-item is-active" href="#overview" data-view="overview"><span class="nav-icon">▦</span>Vue d'ensemble</a>
+        <a class="nav-item" href="#datasets" data-view="datasets"><span class="nav-icon">▤</span>Jeux de données<span class="nav-count">12</span></a>
+        <a class="nav-item" href="#rules" data-view="rules"><span class="nav-icon">⌘</span>Règles de qualité</a>
+        <a class="nav-item" href="#monitoring" data-view="monitoring"><span class="nav-icon">◷</span>Exécutions</a>
+      </nav>
+
+      <p class="nav-label nav-label-spaced">GOUVERNANCE</p>
+      <nav class="primary-nav">
+        <a class="nav-item" href="#alerts" data-view="alerts"><span class="nav-icon">♧</span>Alertes<span class="alert-dot"></span></a>
+        <a class="nav-item" href="#catalog" data-view="catalog"><span class="nav-icon">▧</span>Catalogue Unity</a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="connection"><span class="connection-dot"></span><span><strong>Databricks connecté</strong><small>Dernière synchro à 09:42</small></span></div>
+        <button class="profile-button" type="button" aria-label="Compte de Camille Bernard">
+          <span class="profile-avatar">CB</span><span class="profile-copy"><strong>Camille Bernard</strong><small>Data steward</small></span><span class="profile-menu">···</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content" id="overview">
+      <header class="topbar">
+        <div class="breadcrumb"><span>Qualité des données</span><span class="breadcrumb-divider">/</span><strong id="breadcrumb-current">Vue d'ensemble</strong></div>
+        <div class="topbar-actions">
+          <span class="environment"><span></span>Production</span>
+          <button class="icon-button notification-button" type="button" aria-label="Notifications"><span>♧</span><i></i></button>
+          <button class="help-button" type="button" id="help-button">Besoin d'aide ?</button>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <section class="welcome-row">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-mark"></span>PLATEFORME DATA · SNCF</p>
+            <h1>Bonjour Camille <span class="wave">↗</span></h1>
+            <p class="page-subtitle">Voici l'état de santé de vos données aujourd'hui.</p>
+          </div>
+          <div class="welcome-actions">
+            <label class="period-picker"><span class="calendar-icon">▦</span><select id="period-select" aria-label="Période"><option value="7">7 derniers jours</option><option value="30">30 derniers jours</option><option value="90">90 derniers jours</option></select></label>
+            <button class="button button-primary" type="button" id="new-rule-button"><span class="plus-icon">+</span>Créer une règle</button>
+          </div>
+        </section>
+
+        <section class="metric-grid" aria-label="Indicateurs de qualité">
+          <article class="metric-card metric-score">
+            <div class="metric-top"><span class="metric-label">Score de qualité global</span><span class="metric-symbol score-symbol">◉</span></div>
+            <div class="score-row"><strong class="metric-value">96<span class="metric-unit">%</span></strong><span class="trend positive">↗ 2,4 %</span></div>
+            <div class="score-track"><span style="width:96%"></span></div>
+            <p class="metric-foot">sur 12 jeux de données surveillés</p>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top"><span class="metric-label">Contrôles réussis</span><span class="metric-symbol success-symbol">✓</span></div>
+            <div class="score-row"><strong class="metric-value">248<span class="metric-total">/ 256</span></strong><span class="trend positive">+ 8 cette semaine</span></div>
+            <div class="mini-bars" aria-label="Tendance des contrôles réussis sur sept jours"><i style="height:40%"></i><i style="height:62%"></i><i style="height:50%"></i><i style="height:77%"></i><i style="height:60%"></i><i style="height:83%"></i><i class="bar-highlight" style="height:100%"></i></div>
+            <p class="metric-foot">sur les 7 derniers jours</p>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top"><span class="metric-label">Anomalies détectées</span><span class="metric-symbol warning-symbol">!</span></div>
+            <div class="score-row"><strong class="metric-value">08</strong><span class="trend negative">3 à traiter</span></div>
+            <div class="anomaly-line"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            <p class="metric-foot">5 anomalies déjà résolues</p>
+          </article>
+          <article class="metric-card metric-last">
+            <div class="metric-top"><span class="metric-label">Dernière exécution</span><span class="metric-symbol run-symbol">◷</span></div>
+            <div class="score-row"><strong class="metric-value time-value">09:42</strong><span class="run-status"><i></i>Terminée</span></div>
+            <p class="last-run-name">daily_quality_check</p>
+            <p class="metric-foot">Aujourd'hui · durée 2 min 18 s</p>
+          </article>
+        </section>
+
+        <section class="dashboard-grid">
+          <article class="panel quality-panel">
+            <div class="panel-heading">
+              <div><h2>Évolution de la qualité</h2><p>Score moyen de conformité sur la période</p></div>
+              <button class="more-button" type="button" aria-label="Plus d'options pour l'évolution">···</button>
+            </div>
+            <div class="chart-summary"><strong>96,2 %</strong><span class="trend positive">↗ 2,4 %</span><span class="chart-summary-caption">vs période précédente</span></div>
+            <div class="chart" role="img" aria-label="Le score de qualité évolue de 89 à 96 pour cent cette semaine">
+              <div class="chart-y-labels"><span>100 %</span><span>95 %</span><span>90 %</span><span>85 %</span></div>
+              <div class="chart-plot">
+                <div class="chart-gridline line-one"></div><div class="chart-gridline line-two"></div><div class="chart-gridline line-three"></div><div class="chart-gridline line-four"></div>
+                <svg class="chart-svg" viewBox="0 0 700 150" preserveAspectRatio="none" aria-hidden="true">
+                  <defs><linearGradient id="area-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#73c8a5" stop-opacity=".24"/><stop offset="100%" stop-color="#73c8a5" stop-opacity="0"/></linearGradient></defs>
+                  <path d="M0 112 C42 110 52 91 100 96 S158 108 200 82 S260 88 300 69 S360 74 400 60 S460 72 500 48 S560 65 600 36 S660 47 700 19 L700 150 L0 150 Z" fill="url(#area-fill)"/>
+                  <path d="M0 112 C42 110 52 91 100 96 S158 108 200 82 S260 88 300 69 S360 74 400 60 S460 72 500 48 S560 65 600 36 S660 47 700 19" fill="none" stroke="#278c68" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+                  <circle cx="700" cy="19" r="4" fill="#fff" stroke="#278c68" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+                </svg>
+                <div class="chart-tooltip"><strong>96,2 %</strong><span>Aujourd'hui</span></div>
+              </div>
+              <div class="chart-x-labels"><span>25 sept.</span><span>27 sept.</span><span>29 sept.</span><span>1 oct.</span></div>
+            </div>
+            <div class="chart-legend"><span><i></i>Score de qualité</span><span><i class="legend-target"></i>Objectif 95 %</span></div>
+          </article>
+
+          <article class="panel issues-panel">
+            <div class="panel-heading"><div><h2>À surveiller</h2><p>Les points qui demandent votre attention</p></div><span class="issue-count">3</span></div>
+            <button class="issue-row" type="button" data-dataset="Trafic voyageurs">
+              <span class="issue-icon issue-critical">!</span><span class="issue-copy"><strong>Valeurs manquantes</strong><small>Trafic voyageurs · 12,4 % des lignes</small></span><span class="issue-arrow">›</span>
+            </button>
+            <button class="issue-row" type="button" data-dataset="Référentiel gares">
+              <span class="issue-icon issue-warning">↕</span><span class="issue-copy"><strong>Clé dupliquée</strong><small>Référentiel gares · champ code_uic</small></span><span class="issue-arrow">›</span>
+            </button>
+            <button class="issue-row" type="button" data-dataset="Ponctualité TGV">
+              <span class="issue-icon issue-info">◷</span><span class="issue-copy"><strong>Données en retard</strong><small>Ponctualité TGV · dernière maj. il y a 4 h</small></span><span class="issue-arrow">›</span>
+            </button>
+            <button class="text-link" type="button" data-view-target="alerts">Voir les 8 anomalies <span>→</span></button>
+          </article>
+        </section>
+
+        <section class="panel datasets-panel" id="datasets-section">
+          <div class="panel-heading datasets-heading">
+            <div><h2>Jeux de données surveillés</h2><p>La qualité de vos tables les plus importantes</p></div>
+            <div class="table-actions"><label class="search-box"><span>⌕</span><input id="dataset-search" type="search" placeholder="Rechercher une table..." aria-label="Rechercher une table"></label><button class="filter-button" type="button" id="filter-button"><span>☷</span>Filtrer<span class="filter-caret">⌄</span></button></div>
+          </div>
+          <div class="table-scroll"><table>
+            <thead><tr><th>JEU DE DONNÉES</th><th>DOMAINE</th><th>SCORE</th><th>CONTRÔLES</th><th>DERNIÈRE MISE À JOUR</th><th>STATUT</th><th></th></tr></thead>
+            <tbody id="dataset-table-body">
+              <tr data-name="Trafic voyageurs" data-domain="Exploitation"><td><span class="table-name"><span class="table-icon table-icon-green">TV</span><span><strong>Trafic voyageurs</strong><small>prod.gold.trafic_voyageurs</small></span></span></td><td><span class="domain-tag">Exploitation</span></td><td><span class="table-score score-low">82 %</span><span class="table-score-track"><i style="width:82%"></i></span></td><td><span class="checks"><span class="checks-good">18</span> / 20</span></td><td>Il y a 12 min</td><td><span class="status status-warning"><i></i>À surveiller</span></td><td><button class="row-menu" type="button" aria-label="Détails de Trafic voyageurs">···</button></td></tr>
+              <tr data-name="Référentiel gares" data-domain="Référentiel"><td><span class="table-name"><span class="table-icon table-icon-purple">RG</span><span><strong>Référentiel gares</strong><small>prod.silver.ref_gares</small></span></span></td><td><span class="domain-tag">Référentiel</span></td><td><span class="table-score">98 %</span><span class="table-score-track"><i style="width:98%"></i></span></td><td><span class="checks"><span class="checks-good">14</span> / 14</span></td><td>Il y a 28 min</td><td><span class="status status-good"><i></i>Conforme</span></td><td><button class="row-menu" type="button" aria-label="Détails de Référentiel gares">···</button></td></tr>
+              <tr data-name="Ponctualité TGV" data-domain="Performance"><td><span class="table-name"><span class="table-icon table-icon-orange">PT</span><span><strong>Ponctualité TGV</strong><small>prod.gold.ponctualite_tgv</small></span></span></td><td><span class="domain-tag">Performance</span></td><td><span class="table-score">94 %</span><span class="table-score-track"><i style="width:94%"></i></span></td><td><span class="checks"><span class="checks-good">21</span> / 22</span></td><td>Il y a 4 h</td><td><span class="status status-delayed"><i></i>En retard</span></td><td><button class="row-menu" type="button" aria-label="Détails de Ponctualité TGV">···</button></td></tr>
+              <tr data-name="Ventes et réservations" data-domain="Commercial"><td><span class="table-name"><span class="table-icon table-icon-blue">VR</span><span><strong>Ventes et réservations</strong><small>prod.gold.ventes_reservations</small></span></span></td><td><span class="domain-tag">Commercial</span></td><td><span class="table-score">99 %</span><span class="table-score-track"><i style="width:99%"></i></span></td><td><span class="checks"><span class="checks-good">16</span> / 16</span></td><td>Il y a 6 min</td><td><span class="status status-good"><i></i>Conforme</span></td><td><button class="row-menu" type="button" aria-label="Détails de Ventes et réservations">···</button></td></tr>
+              <tr data-name="Incidents réseau" data-domain="Maintenance"><td><span class="table-name"><span class="table-icon table-icon-red">IR</span><span><strong>Incidents réseau</strong><small>prod.silver.incidents_reseau</small></span></span></td><td><span class="domain-tag">Maintenance</span></td><td><span class="table-score">96 %</span><span class="table-score-track"><i style="width:96%"></i></span></td><td><span class="checks"><span class="checks-good">12</span> / 12</span></td><td>Il y a 19 min</td><td><span class="status status-good"><i></i>Conforme</span></td><td><button class="row-menu" type="button" aria-label="Détails de Incidents réseau">···</button></td></tr>
+            </tbody>
+          </table></div>
+          <div class="table-footer"><span id="table-count">Affichage de 5 jeux de données sur 12</span><button class="text-link" type="button" data-view-target="datasets">Voir tous les jeux de données <span>→</span></button></div>
+        </section>
+
+        <footer class="page-footer"><span>Connecté à <strong>Databricks</strong> · Unity Catalog</span><span>Données actualisées à 09:42</span></footer>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="rule-dialog" id="rule-dialog">
+    <form method="dialog" id="rule-form">
+      <div class="dialog-heading"><div><p class="eyebrow">NOUVEAU CONTRÔLE</p><h2>Créer une règle de qualité</h2></div><button class="dialog-close" value="cancel" aria-label="Fermer">×</button></div>
+      <label class="field-label" for="rule-name">Nom de la règle</label><input class="form-input" id="rule-name" required placeholder="Ex. Vérifier les valeurs obligatoires">
+      <label class="field-label" for="rule-dataset">Jeu de données</label><select class="form-input" id="rule-dataset"><option>Trafic voyageurs</option><option>Référentiel gares</option><option>Ponctualité TGV</option><option>Ventes et réservations</option><option>Incidents réseau</option></select>
+      <label class="field-label" for="rule-type">Type de contrôle</label><select class="form-input" id="rule-type"><option>Valeurs non nulles</option><option>Unicité</option><option>Conformité de format</option><option>Fraîcheur des données</option><option>Seuil personnalisé</option></select>
+      <div class="dialog-actions"><button class="button button-secondary" value="cancel">Annuler</button><button class="button button-primary" id="save-rule-button" value="default">Créer la règle</button></div>
+    </form>
+  </dialog>
+
+  <aside class="detail-drawer" id="detail-drawer" aria-hidden="true">
+    <div class="drawer-heading"><div><p class="eyebrow">JEU DE DONNÉES</p><h2 id="drawer-title">Détails</h2></div><button id="drawer-close" class="dialog-close" aria-label="Fermer">×</button></div>
+    <p class="drawer-table-name" id="drawer-table-name"></p><div class="drawer-score"><strong id="drawer-score-value">96 %</strong><span>Score de qualité</span></div>
+    <div class="drawer-section"><h3>Contrôles actifs</h3><div class="drawer-control"><span>Complétude</span><span class="status status-good"><i></i>Conforme</span></div><div class="drawer-control"><span>Unicité</span><span class="status status-good"><i></i>Conforme</span></div><div class="drawer-control"><span>Fraîcheur</span><span class="status status-warning"><i></i>À vérifier</span></div></div>
+    <button class="button button-primary drawer-run" id="run-check-button" type="button">Lancer les contrôles</button>
+  </aside>
+  <div class="drawer-scrim" id="drawer-scrim"></div>
+</body>
+</html>
