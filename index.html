@@ -14,7 +14,7 @@
 <body>
   <div class="app-shell">
     <aside class="sidebar" aria-label="Navigation principale">
-      <a class="brand" href="#overview" aria-label="DataOps, accueil">
+      <a class="brand" href="#overview" data-view-target="overview" aria-label="DataOps, accueil">
         <span class="brand-mark"><span></span><span></span><span></span></span>
         <span class="brand-name">data<span>ops</span></span>
       </a>
@@ -41,8 +41,8 @@
 
       <div class="sidebar-bottom">
         <div class="connection"><span class="connection-dot"></span><span><strong>Databricks connecté</strong><small>Dernière synchro à 09:42</small></span></div>
-        <button class="profile-button" type="button" aria-label="Compte de Camille Bernard">
-          <span class="profile-avatar">CB</span><span class="profile-copy"><strong>Camille Bernard</strong><small>Data steward</small></span><span class="profile-menu">···</span>
+        <button class="profile-button" type="button" aria-label="Compte de Rouly Pacôme">
+          <span class="profile-avatar">RP</span><span class="profile-copy"><strong>Rouly Pacôme</strong><small>Data steward</small></span><span class="profile-menu">···</span>
         </button>
       </div>
     </aside>
@@ -57,11 +57,11 @@
         </div>
       </header>
 
-      <div class="page-content">
+      <div class="page-content" id="overview-view">
         <section class="welcome-row">
           <div>
             <p class="eyebrow"><span class="eyebrow-mark"></span>PLATEFORME DATA · SNCF</p>
-            <h1>Bonjour Camille <span class="wave">↗</span></h1>
+            <h1>Bonjour Rouly <span class="wave">↗</span></h1>
             <p class="page-subtitle">Voici l'état de santé de vos données aujourd'hui.</p>
           </div>
           <div class="welcome-actions">
@@ -156,6 +156,7 @@
 
         <footer class="page-footer"><span>Connecté à <strong>Databricks</strong> · Unity Catalog</span><span>Données actualisées à 09:42</span></footer>
       </div>
+      <div class="page-content view-page" id="view-container" hidden aria-live="polite"></div>
     </main>
   </div>
 
