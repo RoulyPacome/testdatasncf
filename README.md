@@ -12,12 +12,16 @@ Aucun prérequis ni serveur n’est nécessaire. Ouvrez `index.html` dans un nav
 
 ## Fonctionnalités
 
-- Vue d’ensemble des scores, contrôles, anomalies et exécutions.
-- Recherche et filtrage des jeux de données surveillés.
-- Consultation des détails d’une table et lancement simulé de ses contrôles.
-- Formulaire de création d’une règle de qualité.
+- Vue d’ensemble des scores, contrôles, anomalies et exécutions récentes.
+- Navigation entre les jeux de données, les règles de qualité, les exécutions, les alertes et le catalogue Unity.
+- Recherche et filtres par statut ou domaine dans les listes.
+- Consultation des détails d’un jeu de données et lancement simulé de ses contrôles.
+- Création, activation, désactivation et suppression de règles de qualité.
+- Consultation des alertes et possibilité de les marquer comme résolues.
+- Exploration des catalogues, schémas et tables présentés dans le prototype.
+- Conservation locale des règles, exécutions et alertes modifiées via le stockage du navigateur (`localStorage`).
 - Mise en page adaptée aux écrans mobiles.
 
 ## Limites du prototype
 
-L’interface utilise des données d’exemple. Les actions, indicateurs de connexion et résultats affichés sont simulés : aucune connexion à Databricks ou à Unity Catalog n’est configurée.
+L’interface utilise des données d’exemple. Les exécutions, indicateurs de connexion et résultats affichés sont simulés : aucune connexion à Databricks ou à Unity Catalog n’est configurée. Les données conservées dans `localStorage` restent propres au navigateur utilisé et ne sont pas synchronisées avec un serveur.
