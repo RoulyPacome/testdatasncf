@@ -13,6 +13,7 @@ const navLabels = {
   datasets: 'Jeux de données',
   rules: 'Règles de qualité',
   monitoring: 'Exécutions',
+  assistant: 'Assistant IA',
   alerts: 'Alertes',
   catalog: 'Catalogue Unity',
 };
@@ -140,13 +141,86 @@ function renderCatalog() {
   return `${renderPageHeader('Catalogue Unity', 'Explorez les catalogues, schémas et tables accessibles dans le workspace')}<section class="catalog-summary"><div class="catalog-stat"><span>CATALOGUES</span><strong>${catalogs.length}</strong></div><div class="catalog-stat"><span>SCHÉMAS</span><strong>${schemas.length}</strong></div><div class="catalog-stat"><span>TABLES SUIVIES</span><strong>${datasets.length}</strong></div></section><section class="panel view-panel"><div class="view-toolbar"><label class="search-box"><span>⌕</span><input type="search" data-view-search placeholder="Chercher dans le catalogue..." aria-label="Rechercher dans le catalogue"></label><select class="view-select" data-category-filter aria-label="Filtrer par domaine"><option value="all">Tous les domaines</option>${domains.map((domain) => `<option value="${escapeHTML(domain)}">${escapeHTML(domain)}</option>`).join('')}</select><span class="view-result-count">${catalogs.map(escapeHTML).join(', ')} · ${schemas.length} schémas</span></div><div class="catalog-schema-list">${schemas.map((schema) => catalogs.map((catalog) => `<span class="catalog-schema"><span>▧</span>${escapeHTML(catalog)}.${escapeHTML(schema)}</span>`).join('')).join('')}</div><div class="table-scroll"><table class="view-table"><thead><tr><th>TABLE</th><th>DOMAINE</th><th>SCORE QUALITÉ</th><th>CONTRÔLES</th><th>MISE À JOUR</th><th>STATUT</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
 }
 
+const assistantMessages = [{
+  role: 'assistant',
+  text: 'Bonjour ! Je peux vous aider à explorer les scores et les alertes, ou lancer les contrôles simulés de cette démo. Que souhaitez-vous savoir ?',
+}];
+
+function renderAssistant() {
+  const suggestions = [
+    'Quelles sont les alertes prioritaires ?',
+    'Quel est le score du trafic voyageurs ?',
+    'Quels jeux de données sont accessibles ?',
+    'Simuler un contrôle sur Trafic voyageurs',
+  ];
+  const messages = assistantMessages.map((message) => `<article class="assistant-message assistant-message-${message.role}"><span class="assistant-message-avatar">${message.role === 'assistant' ? '✳' : 'RP'}</span><div class="assistant-message-content"><span class="assistant-message-author">${message.role === 'assistant' ? 'Assistant DataOps' : 'Vous'}</span><p>${escapeHTML(message.text)}</p></div></article>`).join('');
+  const suggestionButtons = assistantMessages.length === 1
+    ? suggestions.map((prompt) => `<button type="button" class="assistant-suggestion" data-assistant-prompt="${escapeHTML(prompt)}">${escapeHTML(prompt)}</button>`).join('')
+    : '';
+  return `<section class="assistant-page"><header class="assistant-heading"><div><p class="eyebrow">ESPACE DE TRAVAIL · SNCF</p><h1>Assistant IA</h1><p class="page-subtitle">Interrogez vos données en langage naturel et demandez une action.</p></div><span class="assistant-mode"><i></i>Prototype local</span></header><div class="assistant-layout"><section class="assistant-chat" aria-label="Conversation avec l’assistant"><div class="assistant-chat-heading"><div><strong>Assistant DataOps</strong><span>Qualité et gouvernance des données</span></div><span class="assistant-status">Démo</span></div><div class="assistant-thread" id="assistant-thread" aria-live="polite">${messages}</div><div class="assistant-composer-wrap"><div class="assistant-suggestions">${suggestionButtons}</div><form class="assistant-composer" id="assistant-form"><label class="sr-only" for="assistant-input">Votre message</label><textarea id="assistant-input" name="message" rows="1" maxlength="600" placeholder="Posez une question sur vos données..." required></textarea><button class="assistant-send" type="submit" aria-label="Envoyer le message" title="Envoyer">↑</button></form><p class="assistant-disclaimer">Prototype : réponses fondées sur des données d’exemple. Aucune requête n’est envoyée à une IA ou à Databricks.</p></div></section><aside class="assistant-context"><p class="eyebrow">PÉRIMÈTRE DISPONIBLE</p><h2>Sources de la démo</h2><ul><li><span>▤</span>${datasets.length} jeux de données</li><li><span>!</span>${alerts.filter((alert) => alert.status === 'Ouverte').length} alertes ouvertes</li><li><span>⌘</span>${rules.filter((rule) => rule.active).length} règles actives</li></ul><div class="assistant-access-note"><strong>Accès simulé</strong><p>Dans une version connectée, les droits de l’utilisateur devront être vérifiés côté serveur avant chaque lecture ou action.</p></div></aside></div></section>`;
+}
+
+function normalizeAssistantText(value) {
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('fr');
+}
+
+function answerAssistant(query) {
+  const normalizedQuery = normalizeAssistantText(query);
+  const datasetMatches = datasets.filter((dataset) => {
+    const name = normalizeAssistantText(dataset.name);
+    return normalizedQuery.includes(name) || name.split(' ').some((part) => part.length > 4 && normalizedQuery.includes(part));
+  });
+  const dataset = datasetMatches.length === 1 ? datasetMatches[0] : null;
+
+  if (/\b(lance|lancer|execute|executer|relance|relancer|simule|simuler|simulation)\b/.test(normalizedQuery)) {
+    if (!dataset) return 'Pour lancer les contrôles, indiquez le nom exact du jeu de données. Cette action sera simulée dans le prototype.';
+    launchChecks(dataset.name);
+    return `Simulation lancée pour « ${dataset.name} ». Le contrôle apparaîtra dans la vue Exécutions et son statut passera à « Terminée » après quelques secondes. Aucun traitement réel n’est exécuté.`;
+  }
+
+  if (/alerte|anomalie|priorit|urgent/.test(normalizedQuery)) {
+    const severityOrder = { Critique: 0, Élevée: 1, Modérée: 2, Faible: 3 };
+    const openAlerts = alerts.filter((alert) => alert.status === 'Ouverte')
+      .sort((left, right) => severityOrder[left.severity] - severityOrder[right.severity]);
+    return openAlerts.length
+      ? `Voici les ${openAlerts.length} alertes ouvertes, classées par gravité :\n${openAlerts.map((alert) => `• ${alert.severity} · ${alert.title} — ${alert.dataset} (${alert.detail})`).join('\n')}`
+      : 'Aucune alerte ouverte pour le moment.';
+  }
+
+  if (dataset && /score|qualite|controle|table|donnee/.test(normalizedQuery)) {
+    return `« ${dataset.name} » (${dataset.path}) a un score de qualité de ${dataset.score} %. ${dataset.checks} contrôles sont conformes. Statut : ${dataset.status}. Dernière mise à jour : ${dataset.lastUpdate}.`;
+  }
+
+  if (/accessible|catalogue|liste.*(jeu|table)|quels.*(jeu|table)|combien.*(jeu|table)/.test(normalizedQuery)) {
+    return `La démo contient ${datasets.length} jeux de données :\n${datasets.map((item) => `• ${item.name} — ${item.domain} (${item.score} %)`).join('\n')}`;
+  }
+
+  if (/score|qualite|sante/.test(normalizedQuery)) {
+    const average = Math.round(datasets.reduce((total, item) => total + item.score, 0) / datasets.length);
+    return `Le score moyen des ${datasets.length} jeux de données de la démo est de ${average} %. ${datasets.filter((item) => item.score < 90).length} jeu(x) ont un score inférieur à 90 %. Pour un détail, indiquez le nom d’un jeu de données.`;
+  }
+
+  return 'Je peux consulter les scores, lister les jeux de données, résumer les alertes ou lancer les contrôles simulés. Essayez « Quelles sont les alertes prioritaires ? ».';
+}
+
+function submitAssistantMessage(message) {
+  const query = message.trim();
+  if (!query) return;
+  assistantMessages.push({ role: 'user', text: query });
+  assistantMessages.push({ role: 'assistant', text: answerAssistant(query) });
+  viewContainer.innerHTML = renderAssistant();
+  const thread = document.querySelector('#assistant-thread');
+  thread.scrollTop = thread.scrollHeight;
+  document.querySelector('#assistant-input').focus();
+}
+
 function navigateView(view) {
   document.querySelectorAll('.nav-item').forEach((link) => link.classList.toggle('is-active', link.dataset.view === view));
   document.querySelector('#breadcrumb-current').textContent = navLabels[view];
   overviewView.hidden = view !== 'overview';
   viewContainer.hidden = view === 'overview';
   if (view !== 'overview') {
-    const pages = { datasets: renderDatasets, rules: renderRules, monitoring: renderExecutions, alerts: renderAlerts, catalog: renderCatalog };
+    const pages = { datasets: renderDatasets, rules: renderRules, monitoring: renderExecutions, assistant: renderAssistant, alerts: renderAlerts, catalog: renderCatalog };
     viewContainer.innerHTML = pages[view]();
   }
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -195,6 +269,11 @@ viewContainer.addEventListener('change', (event) => {
   if (event.target.matches('[data-status-filter], [data-category-filter]')) applyViewFilters();
 });
 viewContainer.addEventListener('click', (event) => {
+  const promptButton = event.target.closest('[data-assistant-prompt]');
+  if (promptButton) {
+    submitAssistantMessage(promptButton.dataset.assistantPrompt);
+    return;
+  }
   const button = event.target.closest('[data-action]');
   if (!button) return;
   const { action, id, name } = button.dataset;
@@ -221,6 +300,18 @@ viewContainer.addEventListener('click', (event) => {
     saveList('dataops-rules', rules);
     viewContainer.innerHTML = renderRules();
     showToast('Règle supprimée');
+  }
+});
+viewContainer.addEventListener('submit', (event) => {
+  if (event.target.matches('#assistant-form')) {
+    event.preventDefault();
+    submitAssistantMessage(new FormData(event.target).get('message'));
+  }
+});
+viewContainer.addEventListener('keydown', (event) => {
+  if (event.target.matches('#assistant-input') && event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    event.target.form.requestSubmit();
   }
 });
 
