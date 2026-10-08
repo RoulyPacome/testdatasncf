@@ -129,8 +129,17 @@ def query_genie(space_id: str, question: str, conversation_id: str | None = None
                         parts.append(f"```sql\n{att.query.query}\n```")
                 answer = "\n\n".join(parts) if parts else "Réponse reçue (aucun contenu textuel)."
                 return conv_id, answer
+                
             if msg.status and msg.status.value in ("FAILED", "CANCELLED"):
-                return conv_id, f"La requête a échoué ({msg.status.value})."
+                # Extract detailed error from attachments
+                error_detail = ""
+                for att in msg.attachments or []:
+                    if att.text and att.text.content:
+                        error_detail += att.text.content + " "
+                if not error_detail and hasattr(msg.status, 'error'):
+                    error_detail = str(msg.status.error)
+                detail_msg = f" Détail : {error_detail.strip()}" if error_detail.strip() else ""
+                return conv_id, f"La requête a échoué ({msg.status.value}).{detail_msg}"
             time.sleep(2)
 
         return conv_id, "Délai dépassé – la réponse prend trop de temps."
