@@ -1,1 +1,17 @@
+command:
+  - python
+  - app.py
 
+resources:
+  - name: genie-space
+    genie_space:
+      space_id: "01f1b2ab24901b63bbaa91c2334e5730"
+      permission: CAN_MANAGE
+  - name: genie-space-2
+    genie_space:
+      space_id: "01f1b81f82481483a3074d9e1cb4d60e"
+      permission: CAN_MANAGE
+  - name: sql-warehouse
+    sql_warehouse:
+      id: "85e691ecd75b1fa4"
+      permission: CAN_USE
